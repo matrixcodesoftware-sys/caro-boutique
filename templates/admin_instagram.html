@@ -1,0 +1,49 @@
+{% extends "admin_base.html" %}
+{% block title %}Instagram{% endblock %}
+{% block content %}
+  <h1>Instagram</h1>
+  <p class="subtitle">Estas fotos aparecen en la sección "Seguinos en Instagram" de la tienda. Al hacer clic en cualquiera de ellas (o en el botón), el cliente va directo a tu perfil de Instagram.</p>
+
+  <div class="card">
+    <h3 style="margin-bottom:14px;">Link de tu perfil de Instagram</h3>
+    <form method="post" action="{{ url_for('admin_update_instagram_link') }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="form-group" style="flex:1;min-width:260px;margin-bottom:0;">
+        <label>URL del perfil</label>
+        <input type="url" name="profile_url" value="{{ profile_url }}" placeholder="https://instagram.com/tu_usuario">
+      </div>
+      <button class="btn btn-sm" type="submit">Guardar link</button>
+    </form>
+  </div>
+
+  {% for p in photos %}
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <img src="{{ p.image_url }}" style="width:110px;height:110px;object-fit:cover;border-radius:8px;background:#eee;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <form method="post" action="{{ url_for('admin_move_instagram_photo', photo_id=p.id) }}">
+          <input type="hidden" name="direction" value="up">
+          <button class="btn btn-outline btn-sm" type="submit" {% if loop.first %}disabled{% endif %}>&uarr; Subir</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_move_instagram_photo', photo_id=p.id) }}">
+          <input type="hidden" name="direction" value="down">
+          <button class="btn btn-outline btn-sm" type="submit" {% if loop.last %}disabled{% endif %}>&darr; Bajar</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_delete_instagram_photo', photo_id=p.id) }}"
+              onsubmit="return confirm('¿Eliminar esta foto?');">
+          <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="text-align:center;color:var(--color-muted);">Todavía no cargaste ninguna foto de Instagram.</div>
+  {% endfor %}
+
+  <div class="card">
+    <h3 style="margin-bottom:14px;">+ Agregar foto</h3>
+    <form method="post" action="{{ url_for('admin_add_instagram_photo') }}" enctype="multipart/form-data" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp,.gif" required>
+      <button class="btn" type="submit">Agregar foto</button>
+    </form>
+  </div>
+{% endblock %}
